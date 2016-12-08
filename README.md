@@ -1,0 +1,1 @@
+# MagNews-Exercise2
