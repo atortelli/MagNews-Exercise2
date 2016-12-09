@@ -18,25 +18,56 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
+/* 
+ * this class is an utility to create and send mail
+ */
 	public class EmailUtil {
 
+		public Transport transport=null;
 		public Session session=null;
 		public Properties props;
 		public String fromMail;
+		public String body;
+		public String user;
+		public String password;
+		/* 
+		 * Create the body of the mail to send
+		 * @param bodySize size of the body of mail in bytes
+		 */
+		void createBody(int bodySize)
+		{
+			body="";
+			String strToShow=new String("This email is for benchmark purpose.\n");
+			int i=0;
+			for (i=0;i<(bodySize-strToShow.length());i+=strToShow.length()){
+				body=body+strToShow;
+			}
+			body=body+strToShow.substring(0, (bodySize-body.length()));
+		}
+		/*
+		 * create transport object used to send mails
+		 */
+		void createNewTransport() throws Exception
+		{
+			transport = session.getTransport("smtp");
+		}
+		/*
+		 * Constructor
+		 * inizialize props object
+		 */
 		public EmailUtil()
 		{
 			props=new Properties();
 		}
 		
 		/**
-		 * Utility method to send simple HTML email
-		 * @param session
-		 * @param toEmail
-		 * @param subject
-		 * @param body
+		 * sendEmail
+		 * send a mail
+		 * session and transport object must be inizialized in a correct way  
+		 * @param toEmail email of the receiver
+		 * @param subject subject of the email
 		 */
-		public void sendEmail(String toEmail, String subject, String body) throws Exception
+		public void sendEmail(String toEmail, String subject) throws Exception
 		{
 		    if (session==null){
 		    	throw new Exception("session==null!");
@@ -55,11 +86,16 @@ import javax.mail.internet.MimeMultipart;
 
 		      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
 		      System.out.println("Message is ready");
-	    	  Transport.send(msg);  
-
+		    
+		      transport.send(msg);
 		      System.out.println("EMail Sent Successfully!!");
 		    
 		}
+		/*
+		 * create session object
+		 * @input email mail address of the receiver
+		 * @input password password associated with mail address
+		 */
 		public void createNewSession(final String email,final String password){
 			fromMail=email;
 			session = Session.getInstance(props, new javax.mail.Authenticator() {
